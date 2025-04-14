@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog.apps.BlogConfig',  # Подключение приложения Blog.
     'pages.apps.PagesConfig',  # Подключение приложения Pages.
+    'debug_toolbar',  # Установка Django Debug Toolbar.
 ]
 
 MIDDLEWARE = [
@@ -27,6 +28,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Установка Django Debug Toolbar.
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',  # Обработка запросов с localhost.
 ]
 
 ROOT_URLCONF = 'blogicum.urls'
