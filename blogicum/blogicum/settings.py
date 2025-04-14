@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog.apps.BlogConfig',  # Подключение приложения Blog.
     'pages.apps.PagesConfig',  # Подключение приложения Pages.
+    'core.apps.CoreConfig',  # Подключение приложения Core.
     'debug_toolbar',  # Установка Django Debug Toolbar.
 ]
 
