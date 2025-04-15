@@ -1,23 +1,44 @@
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.utils.timezone import now
 
-
-# posts_dict: dict[int, dict[str, str]] = {post['id']: post for post in posts}
+from blog.models import Post, Category
 
 
 def index(request) -> None:
     """Функция рендера главной страницы проекта."""
-    return render(request, 'blog/index.html', {'posts': posts[::-1]})
+    post_list = Post.objects.filter(
+        pub_date__lte=now(),
+        is_published__exact=True,
+        category__is_published__exact=True,
+    ).order_by('-pub_date')[:5]
+    return render(request, 'blog/index.html',
+                  {'post_list': post_list})
 
 
 def post_detail(request, post_id: int) -> None:
     """Функция рендера развернутой страницы поста."""
-    post: dict[str, str] | None = posts_dict.get(post_id)
-    if not post:
-        raise Http404(f"Пост с id {post_id} не найден.")
-    return render(request, 'blog/detail.html', {'post': post})
+    post = get_object_or_404(Post, pk=post_id)
+    if (post.pub_date > now() or not post.is_published
+            or not post.category.is_published):
+        raise Http404("Пост не найден или недоступен.")
+    return render(request, 'blog/detail.html',
+                  {'post': post})
 
 
 def category_posts(request, category_slug: str) -> None:
     """Функция рендера страницы категорий поста."""
-    return render(request, 'blog/category.html', {'category_posts': category_slug})
+    category = get_object_or_404(Category, slug=category_slug)
+    if not category.is_published:
+        raise Http404("Категория не найдена или недоступна.")
+    posts = Post.objects.filter(
+        category__exact=category,
+        is_published__exact=True,
+        pub_date__lte=now(),
+    ).order_by('-pub_date')
+
+    context = {
+        'category': category,
+        'category_posts': posts,
+    }
+    return render(request, 'blog/category.html', context)
