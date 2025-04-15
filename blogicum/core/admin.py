@@ -4,7 +4,8 @@ from django.contrib import admin
 class CategoryAdmin(admin.ModelAdmin):
     """Настройка админ-панели модели Категории."""
 
-    list_display = ('title', 'description', 'slug', 'is_published', 'created_at')
+    list_display = ('title', 'description',
+                    'slug', 'is_published', 'created_at')
     list_editable = ('description', 'slug', 'is_published')
     search_fields = ('title',)
     list_filter = ('title',)
