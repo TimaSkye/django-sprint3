@@ -1,44 +1,33 @@
-from django.http import Http404
 from django.shortcuts import render, get_object_or_404
-from django.utils.timezone import now
 
+from blog.constants import POSTS_ON_PAGE
 from blog.models import Post, Category
 
 
-def index(request) -> None:
-    """Функция рендера главной страницы проекта."""
-    post_list = Post.objects.filter(
-        pub_date__lte=now(),
-        is_published__exact=True,
-        category__is_published__exact=True,
-    ).order_by('-pub_date')[:5]
+def index(request):
+    """Главная страница с последними опубликованными постами."""
+    post_list = Post.published.all()[:POSTS_ON_PAGE]
     return render(request, 'blog/index.html',
                   {'post_list': post_list})
 
 
-def post_detail(request, post_id: int) -> None:
-    """Функция рендера развернутой страницы поста."""
-    post = get_object_or_404(Post, pk=post_id)
-    if (post.pub_date > now() or not post.is_published
-            or not post.category.is_published):
-        raise Http404("Пост не найден или недоступен.")
+def post_detail(request, post_id: int):
+    """Страница с подробной информацией о посте."""
+    post = get_object_or_404(Post.published, pk=post_id)
     return render(request, 'blog/detail.html',
                   {'post': post})
 
 
-def category_posts(request, category_slug: str) -> None:
-    """Функция рендера страницы категорий поста."""
-    category = get_object_or_404(Category, slug=category_slug)
-    if not category.is_published:
-        raise Http404("Категория не найдена или недоступна.")
-    posts = Post.objects.filter(
-        category__exact=category,
-        is_published__exact=True,
-        pub_date__lte=now(),
-    ).order_by('-pub_date')
-
-    context = {
-        'category': category,
-        'category_posts': posts,
-    }
-    return render(request, 'blog/category.html', context)
+def category_posts(request, category_slug: str):
+    """Страница с постами определённой категории."""
+    category = get_object_or_404(Category, slug=category_slug,
+                                 is_published=True)
+    posts = Post.published.filter(category=category)
+    return render(
+        request,
+        'blog/category.html',
+        {
+            'category': category,
+            'category_posts': posts,
+        },
+    )
