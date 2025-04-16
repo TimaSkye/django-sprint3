@@ -1,6 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 
+from blog.models import Category, Location, Post
 
+admin.site.empty_value_display = 'Не задано'
+admin.site.unregister(Group)
+
+@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     """Настройка админ-панели модели Категории."""
 
@@ -11,7 +17,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter = ('title',)
     list_display_links = ('title',)
 
-
+@admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
     """Настройка админ-панели модели Локации."""
 
@@ -21,7 +27,7 @@ class LocationAdmin(admin.ModelAdmin):
     list_filter = ('name',)
     list_display_links = ('name',)
 
-
+@admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     """Настройка админ-панели модели Публикации."""
 
