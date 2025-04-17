@@ -27,16 +27,14 @@ class PublishedPostManager(models.Manager):
 class Category(PublishBaseModel):
     """Модель категорий постов."""
 
-    title = models.CharField(
-        max_length=FIELD_MAX_LENGTH,
-        verbose_name='Заголовок'
-    )
+    title = models.CharField(max_length=FIELD_MAX_LENGTH,
+                             verbose_name='Заголовок')
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
         unique=True,
         verbose_name='Идентификатор',
         help_text='Идентификатор страницы для URL; '
-                  'разрешены символы латиницы, цифры, дефис и подчёркивание.',
+        'разрешены символы латиницы, цифры, дефис и подчёркивание.',
     )
 
     class Meta:
@@ -50,10 +48,8 @@ class Category(PublishBaseModel):
 class Location(PublishBaseModel):
     """Модель местоположения."""
 
-    name = models.CharField(
-        max_length=FIELD_MAX_LENGTH,
-        verbose_name='Название места'
-    )
+    name = models.CharField(max_length=FIELD_MAX_LENGTH,
+                            verbose_name='Название места')
 
     class Meta:
         verbose_name = 'местоположение'
@@ -66,20 +62,16 @@ class Location(PublishBaseModel):
 class Post(PublishBaseModel):
     """Модель публикаций (постов)."""
 
-    title = models.CharField(
-        max_length=FIELD_MAX_LENGTH,
-        verbose_name='Заголовок'
-    )
+    title = models.CharField(max_length=FIELD_MAX_LENGTH,
+                             verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
         help_text='Если установить дату и время в будущем — '
-                  'можно делать отложенные публикации.',
+        'можно делать отложенные публикации.',
     )
     author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name='Автор публикации'
+        User, on_delete=models.CASCADE, verbose_name='Автор публикации'
     )
     location = models.ForeignKey(
         Location,
@@ -89,9 +81,7 @@ class Post(PublishBaseModel):
         verbose_name='Местоположение',
     )
     category = models.ForeignKey(
-        Category,
-        on_delete=models.SET_NULL,
-        null=True,
+        Category, on_delete=models.SET_NULL, null=True,
         verbose_name='Категория'
     )
 
