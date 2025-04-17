@@ -17,23 +17,3 @@ class PublishBaseModel(models.Model):
 
     class Meta:
         abstract = True
-
-
-class TruncleTitleModel(models.Model):
-    """Абстрактная модель вывода срезанного title."""
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return self.title[:30] + ('...' if len(self.title) > 30 else '')
-
-
-class TruncleNameModel(models.Model):
-    """Абстрактная модель вывода срезанного name."""
-
-    def __str__(self):
-        return self.name[:30] + ('...' if len(self.name) > 30 else '')
-
-    class Meta:
-        abstract = True

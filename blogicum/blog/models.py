@@ -2,8 +2,9 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from core.models import PublishBaseModel, TruncleTitleModel, TruncleNameModel
+from core.models import PublishBaseModel
 from .constants import FIELD_MAX_LENGTH
+from .utils import truncate_text
 
 User = get_user_model()
 
@@ -23,48 +24,62 @@ class PublishedPostManager(models.Manager):
         )
 
 
-class Category(PublishBaseModel, TruncleTitleModel):
+class Category(PublishBaseModel):
     """Модель категорий постов."""
 
-    title = models.CharField(max_length=FIELD_MAX_LENGTH,
-                             verbose_name='Заголовок')
+    title = models.CharField(
+        max_length=FIELD_MAX_LENGTH,
+        verbose_name='Заголовок'
+    )
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
         unique=True,
         verbose_name='Идентификатор',
         help_text='Идентификатор страницы для URL; '
-        'разрешены символы латиницы, цифры, дефис и подчёркивание.',
+                  'разрешены символы латиницы, цифры, дефис и подчёркивание.',
     )
 
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
+    def __str__(self):
+        return truncate_text(self.title)
 
-class Location(PublishBaseModel, TruncleNameModel):
+
+class Location(PublishBaseModel):
     """Модель местоположения."""
 
-    name = models.CharField(max_length=FIELD_MAX_LENGTH,
-                            verbose_name='Название места')
+    name = models.CharField(
+        max_length=FIELD_MAX_LENGTH,
+        verbose_name='Название места'
+    )
 
     class Meta:
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 
+    def __str__(self):
+        return truncate_text(self.name)
 
-class Post(PublishBaseModel, TruncleTitleModel):
+
+class Post(PublishBaseModel):
     """Модель публикаций (постов)."""
 
-    title = models.CharField(max_length=FIELD_MAX_LENGTH,
-                             verbose_name='Заголовок')
+    title = models.CharField(
+        max_length=FIELD_MAX_LENGTH,
+        verbose_name='Заголовок'
+    )
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
         help_text='Если установить дату и время в будущем — '
-        'можно делать отложенные публикации.',
+                  'можно делать отложенные публикации.',
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name='Автор публикации'
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор публикации'
     )
     location = models.ForeignKey(
         Location,
@@ -74,8 +89,11 @@ class Post(PublishBaseModel, TruncleTitleModel):
         verbose_name='Местоположение',
     )
     category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, null=True,
-        verbose_name='Категория')
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Категория'
+    )
 
     objects = models.Manager()
     published = PublishedPostManager()
@@ -85,3 +103,6 @@ class Post(PublishBaseModel, TruncleTitleModel):
         verbose_name_plural = 'Публикации'
         ordering = ('-pub_date',)
         default_related_name = 'posts'
+
+    def __str__(self):
+        return truncate_text(self.title)
